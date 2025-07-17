@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Café Aroma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;400&family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main-bg: #111;
+      --heading-color: #fff;
+      --accent: #ffd700;
+      --accent2: #ffd700;
+      --nav-bg: #ff9800cc;
+      --footer-bg: #ff9800;
+      --font: 'Poppins', 'Montserrat', sans-serif;
+      --heading-font: 'Playfair Display', serif;
+      --card-bg: #181818;
+      --shadow: 0 4px 24px rgba(0,0,0,0.18);
+      --gold-gradient: linear-gradient(90deg, #ffd700 0%, #ff9800 100%);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--main-bg);
+      color: var(--heading-color);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      line-height: 1.7;
+      letter-spacing: 0.02em;
+    }
+    .bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+      filter: brightness(0.7) saturate(1.1) blur(0.5px);
+      background: #000;
+      will-change: transform;
+      transition: transform 0.7s cubic-bezier(.4,2,.6,1);
+    }
+    body.scrolled .bg-video {
+      transform: scale(1.03) translateY(-10px);
+    }
+    .loader {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.25);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.7s;
+    }
+    .loader.hide { opacity: 0; pointer-events: none; }
+    .cup-loader {
+      width: 60px;
+      height: 70px;
+      position: relative;
+      margin: 0 auto 18px auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .cup {
+      width: 48px;
+      height: 32px;
+      background: #fff;
+      border-radius: 0 0 24px 24px / 0 0 32px 32px;
+      border: 4px solid #ffd600;
+      border-top: none;
+      position: absolute;
+      bottom: 0;
+      left: 6px;
+      z-index: 2;
+      box-shadow: 0 2px 16px #ffd60044;
+    }
+    .cup-handle {
+      position: absolute;
+      right: -16px;
+      bottom: 6px;
+      width: 18px;
+      height: 28px;
+      border: 4px solid #ffd600;
+      border-radius: 50%;
+      border-left: none;
+      border-top: none;
+      background: none;
+      z-index: 1;
+    }
+    .steam {
+      position: absolute;
+      left: 18px;
+      bottom: 32px;
+      width: 8px;
+      height: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .steam span {
+      display: block;
+      width: 8px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #ffd600cc 0%, transparent 100%);
+      opacity: 0.7;
+      margin-bottom: 2px;
+      animation: steam-rise 1.2s infinite ease-in-out;
+    }
+    .steam span:nth-child(2) {
+      animation-delay: 0.4s;
+      opacity: 0.5;
+    }
+    .steam span:nth-child(3) {
+      animation-delay: 0.7s;
+      opacity: 0.3;
+    }
+    @keyframes steam-rise {
+      0% { opacity: 0.7; transform: translateY(0) scaleX(1); }
+      50% { opacity: 1; transform: translateY(-10px) scaleX(1.2); }
+      100% { opacity: 0; transform: translateY(-24px) scaleX(0.8); }
+    }
+    .loader-text {
+      font-size: 1.3rem;
+      color: var(--accent2);
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    nav {
+      width: 100%;
+      background: var(--nav-bg);
+      box-shadow: none;
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 70px;
+      transition: background 0.3s, backdrop-filter 0.3s;
+      backdrop-filter: blur(12px) saturate(1.2);
+      background: var(--nav-bg);
+    }
+    .nav-container {
+      width: 90%;
+      max-width: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px #000a;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.2rem;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.15rem;
+      position: relative;
+      padding: 6px 0;
+      transition: color 0.2s;
+      border: none !important;
+    }
+    .nav-links a::after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      transition: width 0.3s;
+      margin-top: 2px;
+    }
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+    }
+    .menu-toggle span {
+      width: 28px; height: 3px;
+      background: var(--accent2);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    header {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      background: none;
+      padding-top: 100px;
+      padding-bottom: 70px;
+      border-radius: 0 0 40px 40px;
+      box-shadow: none;
+      margin-bottom: 30px;
+    }
+    header h1 {
+      font-size: 3.8rem;
+      color: var(--accent2);
+      margin-bottom: 1.2rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-shadow: 0 4px 16px rgba(33,150,243,0.13);
+      text-transform: uppercase;
+    }
+    header p {
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin-bottom: 2.5rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+    .cta-btn {
+      background: var(--accent);
+      color: #111;
+      border: none;
+      padding: 1.1rem 2.5rem;
+      border-radius: 40px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(25,118,210,0.13);
+      transition: background 0.2s, transform 0.2s;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 24px #ffd60033, 0 2px 8px #0008;
+      background-image: var(--gold-gradient);
+      background-size: 200% 100%;
+      background-position: left center;
+      transition: background-position 0.4s, box-shadow 0.22s, transform 0.22s;
+    }
+    .cta-btn:hover {
+      background-position: right center;
+      box-shadow: 0 8px 32px #ffd60055, 0 4px 16px #000a;
+    }
+    .cta-btn:active {
+      animation: ripple 0.5s linear;
+    }
+    @keyframes ripple {
+      0% { box-shadow: 0 0 0 0 #ffd60044; }
+      100% { box-shadow: 0 0 0 16px transparent; }
+    }
+    .cta-btn:hover {
+      background: var(--accent2);
+      transform: translateY(-3px) scale(1.05);
+    }
+    section {
+      max-width: 1100px;
+      margin: 0 auto 80px auto;
+      padding: 60px 24px 0 24px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s, transform 0.8s;
+      border: none;
+      color: #fff;
+    }
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    section h2 {
+      color: var(--accent2);
+      font-size: 2.7rem;
+      margin-bottom: 1.7rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-align: left;
+      padding-left: 8px;
+      border-left: 6px solid var(--accent);
+      background: linear-gradient(90deg, #ffd700 60%, transparent 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 12px #000a;
+    }
+    section p, section ul {
+      font-size: 1.18rem;
+      color: var(--accent2);
+      line-height: 1.8;
+      margin-bottom: 1.3rem;
+      text-align: center;
+      font-weight: 500;
+    }
+    .services-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      justify-content: center;
+      margin-top: 2.2rem;
+    }
+    .service {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(33,150,243,0.13);
+      padding: 2.2rem 1.7rem;
+      width: 270px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+      border: 2px solid #bbdefb;
+      position: relative;
+      overflow: hidden;
+    }
+    .service:hover {
+      transform: translateY(-10px) scale(1.06);
+      box-shadow: 0 12px 36px rgba(33,150,243,0.18);
+      border-color: var(--accent2);
+    }
+    .service-icon {
+      font-size: 2.8rem;
+      color: var(--accent);
+      margin-bottom: 1.1rem;
+      filter: drop-shadow(0 2px 8px #e3f2fd);
+    }
+    .service h3 {
+      color: var(--accent2);
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.3rem;
+      max-width: 420px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(33,150,243,0.10);
+      padding: 2rem 1.5rem;
+      border: 2px solid #bbdefb;
+    }
+    .contact-form input, .contact-form textarea {
+      padding: 1rem 1.2rem;
+      border-radius: 10px;
+      border: 1.5px solid #fff;
+      font-size: 1.08rem;
+      font-family: var(--font);
+      resize: none;
+      background: transparent;
+      color: #fff;
+      font-weight: 500;
+      transition: border 0.2s;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+    .contact-form input:focus, .contact-form textarea:focus {
+      border: 1.5px solid var(--accent2);
+      outline: none;
+    }
+    .contact-form button {
+      background: var(--accent);
+      color: #111;
+      border: none;
+      padding: 1rem 0;
+      border-radius: 10px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      letter-spacing: 1px;
+      margin-top: 8px;
+      box-shadow: 0 2px 12px rgba(25,118,210,0.10);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 24px #ffd60033, 0 2px 8px #0008;
+      background-image: var(--gold-gradient);
+      background-size: 200% 100%;
+      background-position: left center;
+      transition: background-position 0.4s, box-shadow 0.22s, transform 0.22s;
+    }
+    .contact-form button:hover {
+      background-position: right center;
+      box-shadow: 0 8px 32px #ffd60055, 0 4px 16px #000a;
+    }
+    .contact-form button:active {
+      animation: ripple 0.5s linear;
+    }
+    @keyframes ripple {
+      0% { box-shadow: 0 0 0 0 #ffd60044; }
+      100% { box-shadow: 0 0 0 16px transparent; }
+    }
+    .contact-form button:hover {
+      background: var(--accent2);
+      transform: translateY(-2px) scale(1.04);
+    }
+    footer {
+      background: var(--footer-bg) !important;
+      color: #fff !important;
+      text-align: center;
+      padding: 36px 0 20px 0 !important;
+      font-size: 1.15rem;
+      font-family: var(--font);
+      margin-top: 50px;
+      box-shadow: none;
+      border-radius: 32px 32px 0 0;
+      border-top: 4px solid;
+      border-image: var(--gold-gradient) 1;
+      background: rgba(30, 22, 18, 0.92);
+      backdrop-filter: blur(8px);
+    }
+    footer div { color: #fff !important; }
+    footer a { color: var(--accent); text-decoration: underline; border: none !important; }
+    footer a:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      background: rgba(255, 216, 0, 0.08);
+      border-radius: 6px;
+    }
+    /* Add text shadow for readability */
+    header h1, section h2, .logo, .service h3, footer, .nav-links a, section p, section ul, .loader-text {
+      text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+    .contact-form input::placeholder, .contact-form textarea::placeholder {
+      color: #e3e3e3;
+      opacity: 1;
+    }
+    @media (max-width: 1100px) {
+      header, section, .nav-container {
+        max-width: 100vw;
+      }
+      #about, #contact, #gallery, #menu {
+        max-width: 98vw;
+        padding-left: 2vw;
+        padding-right: 2vw;
+      }
+    }
+    @media (max-width: 900px) {
+      header {
+        flex-direction: column;
+        padding: 90px 0 0 0 !important;
+      }
+      header > div {
+        max-width: 98vw !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+      }
+      #about, #contact {
+        flex-direction: column;
+        gap: 24px !important;
+        padding: 0 !important;
+      }
+      #about > div, #contact > div {
+        border-radius: 18px !important;
+        max-width: 98vw !important;
+        margin: 0 auto !important;
+      }
+    }
+    @media (max-width: 700px) {
+      nav { height: 60px; }
+      .logo { font-size: 1.3rem; }
+      .nav-links { gap: 1.1rem; }
+      header {
+        padding-top: 70px !important;
+      }
+      header > div {
+        padding: 32px 8px 32px 8px !important;
+      }
+      #about, #contact, #gallery, #menu {
+        padding: 0 2vw !important;
+      }
+      .gallery-filter-btn, .menu-filter-btn {
+        padding: 8px 14px !important;
+        font-size: 1rem !important;
+      }
+      .gallery-item, .menu-item {
+        min-width: 0 !important;
+      }
+    }
+    @media (max-width: 600px) {
+      .nav-links {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background: transparent;
+        flex-direction: column;
+        width: 180px;
+        gap: 0;
+        box-shadow: none;
+        border-radius: 0 0 16px 16px;
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.4s;
+      }
+      .nav-links.open { max-height: 300px; gap: 1.2rem; padding: 1rem 0; }
+      .menu-toggle { display: flex; }
+      header, #about, #contact, #gallery, #menu {
+        padding: 0 2vw !important;
+        border-radius: 0 !important;
+      }
+      .gallery-item, .menu-item {
+        min-width: 0 !important;
+        border-radius: 10px !important;
+      }
+      footer {
+        padding: 24px 0 12px 0 !important;
+        border-radius: 18px 18px 0 0 !important;
+      }
+      footer > div, footer > span {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+      }
+      #gallery {
+        padding: 24px 4px 0 4px !important;
+        border-radius: 0 !important;
+      }
+      #gallery-filters {
+        flex-direction: column;
+        gap: 10px !important;
+      }
+      #gallery-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+      }
+      #contact {
+        flex-direction: column !important;
+        padding: 0 4px !important;
+        border-radius: 0 !important;
+      }
+      #contact > div {
+        border-radius: 10px !important;
+        min-width: 0 !important;
+        max-width: 100vw !important;
+        padding: 24px 8px 16px 8px !important;
+      }
+      .contact-form input, .contact-form textarea, .contact-form button {
+        font-size: 1rem !important;
+        padding: 10px 8px !important;
+      }
+      .contact-form button {
+        width: 100%;
+      }
+      header {
+        padding-top: 110px !important;
+      }
+      header > div > div:first-child {
+        margin-top: 18px !important;
+      }
+    }
+    /* Fade-in Animation */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeInUp 1s cubic-bezier(.4,2,.6,1) forwards;
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    /* Hover Effects */
+    .nav-links a, .cta-btn, .gallery-filter-btn, .menu-filter-btn, .gallery-item, .menu-item, .service, .contact-form button, .footer a, .about-feature-card {
+      transition: transform 0.22s cubic-bezier(.4,2,.6,1), box-shadow 0.22s cubic-bezier(.4,2,.6,1), background 0.18s;
+    }
+    .gallery-item:hover, .menu-item:hover, .service:hover, .about-feature-card:hover {
+      transform: scale(1.06) translateY(-8px) rotateZ(-1deg);
+      box-shadow: 0 8px 32px #ffd60055, 0 4px 16px #000a;
+      z-index: 3;
+    }
+    .nav-links a:hover, .cta-btn:hover, .gallery-filter-btn:hover, .menu-filter-btn:hover, .contact-form button:hover, .footer a:hover {
+      transform: scale(1.045);
+      box-shadow: 0 4px 24px #ffd60044, 0 2px 8px #0008;
+      z-index: 2;
+    }
+    /* Hero Section Animation */
+    .hero-animate {
+      opacity: 0;
+      transform: translateY(40px);
+      animation: heroFadeInUp 1s cubic-bezier(.4,2,.6,1) forwards;
+    }
+    .hero-animate-1 { animation-delay: 0.2s; }
+    .hero-animate-2 { animation-delay: 0.4s; color: var(--accent); }
+    .hero-animate-3 { animation-delay: 0.6s; color: var(--accent); }
+    .hero-animate-4 { animation-delay: 0.8s; color: var(--accent); }
+    .hero-animate-5 { animation-delay: 1s; }
+    @keyframes heroFadeInUp {
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    .gallery-filter-btn.active, .gallery-filter-btn:focus, .gallery-filter-btn:hover {
+      background: #ffd700 !important;
+      color: #111 !important;
+      border: none !important;
+    }
+    .gallery-filter-btn.active::after, .menu-filter-btn.active::after {
+      content: '';
+      display: block;
+      height: 3px;
+      width: 100%;
+      background: var(--gold-gradient);
+      border-radius: 2px;
+      margin-top: 2px;
+      animation: underlineIn 0.4s cubic-bezier(.4,2,.6,1);
+    }
+    @keyframes underlineIn {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    .about-feature-card span:first-child {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    .about-feature-card {
+      border-top: 3px solid var(--accent);
+      box-shadow: 0 4px 24px #ffd60022, 0 2px 8px #0008;
+      transition: box-shadow 0.22s, transform 0.22s;
+    }
+    .about-feature-card:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .gallery-item, .menu-item {
+      box-shadow: 0 4px 24px #ffd60022, 0 2px 8px #0008;
+      transition: box-shadow 0.22s, transform 0.22s;
+    }
+    .gallery-item:focus, .menu-item:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    /* Button ripple effect (JS) */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple-effect 0.6s linear;
+      background: rgba(255, 214, 0, 0.4);
+      pointer-events: none;
+      z-index: 10;
+    }
+    @keyframes ripple-effect {
+      to {
+        transform: scale(2.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <video class="bg-video" autoplay loop muted playsinline poster="https://cdn.coverr.co/thumbnails/coverr-cafe-people-1577975831557?auto=compress&fit=crop&w=1200&q=60">
+    <source src="https://cdn.coverr.co/videos/coverr-cafe-people-1577975831557?auto=compress&width=1200&quality=70" type="video/mp4">
+    <!-- Fallback image if video not supported -->
+  </video>
+  <div class="loader" id="loader">
+    <div>
+      <div class="cup-loader">
+        <div class="steam"><span></span><span></span><span></span></div>
+        <div class="cup"></div>
+        <div class="cup-handle"></div>
+      </div>
+      <div class="loader-text">Loading Café Experience...</div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-container">
+      <div class="logo">Café Aroma</div>
+      <div class="menu-toggle" id="menu-toggle">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="nav-links" id="nav-links">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#menu">Menu</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+  <header id="home" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; min-height: 90vh; background: none; box-shadow: none; border-radius: 0; margin-bottom: 30px; padding: 90px 0 0 0; position: relative; z-index: 1;">
+    <div style="flex: 1 1 420px; min-width: 320px; max-width: 540px; padding: 60px 32px 60px 48px; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2;">
+      <div class="hero-animate hero-animate-1" style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+        <span style="font-size: 1.5rem;">&#9749;</span>
+        <span style="background: #fff; color: #a05a2c; font-weight: 700; border-radius: 18px; padding: 6px 18px; font-size: 1.05rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 8px;">Est. 2010</span>
+      </div>
+      <div class="hero-animate hero-animate-2" style="font-family: 'Poppins', cursive; font-size: 3.2rem; color: #fff; font-weight: 900; margin-bottom: 18px; letter-spacing: 2px; text-shadow: 0 4px 24px rgba(0,0,0,0.25);">Café Aroma Delights</div>
+      <div class="hero-animate hero-animate-3" style="font-size: 1.18rem; color: #f5e6d6; margin-bottom: 32px; text-shadow: 0 2px 8px rgba(0,0,0,0.18);">Where passion meets perfection. Every cup tells a story of tradition, innovation, and pure coffee artistry.</div>
+      <div class="hero-animate hero-animate-4" style="display: flex; gap: 36px; margin-bottom: 32px;">
+        <div style="text-align: center;"><div style="color: #ffd600; font-size: 2rem; font-weight: 900;">10+</div><div style="color: #fff; font-size: 1rem;">Years</div></div>
+        <div style="text-align: center;"><div style="color: #ffd600; font-size: 2rem; font-weight: 900;">1k+</div><div style="color: #fff; font-size: 1rem;">Happy Clients</div></div>
+        <div style="text-align: center;"><div style="color: #ffd600; font-size: 2rem; font-weight: 900;">100+</div><div style="color: #fff; font-size: 1rem;">Recipes</div></div>
+      </div>
+      <div class="hero-animate hero-animate-5" style="display: flex; gap: 18px;">
+        <a href="#services" style="background: linear-gradient(90deg, #a05a2c, #ffd600); color: #fff; font-weight: 700; border-radius: 24px; padding: 14px 32px; font-size: 1.15rem; box-shadow: 0 2px 12px rgba(0,0,0,0.13); text-decoration: none; display: flex; align-items: center; gap: 8px;">🍽️ Explore Menu</a>
+        <a href="#contact" style="background: none; color: #ffd600; font-weight: 700; border-radius: 24px; padding: 14px 32px; font-size: 1.15rem; border: 2px solid #ffd600; text-decoration: none; display: flex; align-items: center; gap: 8px;">📞 Order Now</a>
+      </div>
+    </div>
+    <div style="flex: 1 1 340px; min-width: 300px; max-width: 480px; display: flex; align-items: center; justify-content: center; position: relative; padding: 40px 0 40px 0;">
+      <div style="position: relative; width: 100%; max-width: 340px;">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="Featured Coffee" style="width: 100%; border-radius: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); position: relative; z-index: 2;">
+        <span style="position: absolute; top: 18px; right: 18px; background: #ffd600; color: #6d4c2b; font-weight: 700; border-radius: 18px; padding: 8px 18px; font-size: 1.05rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 8px; z-index: 3;">⭐ Best in Town</span>
+        <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80" alt="Pastry" style="width: 120px; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.13); position: absolute; left: -40px; bottom: -40px; z-index: 1; border: 4px solid #fff;">
+      </div>
+    </div>
+    <div style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(30,22,18,0.92) 60%, rgba(30,22,18,0.25) 100%); border-radius: 0 0 40px 40px; z-index: 0;"></div>
+  </header>
+  <section id="about" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 40px; background: none; box-shadow: none; border: none; max-width: 1100px; margin: 0 auto 80px auto; padding: 0;">
+    <div style="flex: 1 1 340px; min-width: 280px; display: flex; flex-direction: column; align-items: center;">
+      <div style="position: relative; width: 100%; max-width: 320px;">
+        <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=600&q=80" alt="Cafe Team" style="width: 100%; border-radius: 18px; box-shadow: 0 4px 24px rgba(0,0,0,0.18);">
+        <span style="position: absolute; bottom: -18px; right: 18px; background: linear-gradient(90deg, #a05a2c, #ffd600); color: #fff; font-weight: 700; border-radius: 50px; padding: 10px 22px; font-size: 1.1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 3px solid #fff;">10 Years of Excellence</span>
+      </div>
+    </div>
+    <div style="flex: 2 1 420px; min-width: 320px; display: flex; flex-direction: column; gap: 32px;">
+      <div style="background: #181818; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); padding: 32px 28px 24px 28px; margin-bottom: 0; border: 1.5px solid #ffd600;">
+        <div style="font-size: 1.2rem; color: #ffd600; font-weight: 700; margin-bottom: 18px;">Our Journey</div>
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; align-items: flex-start; gap: 16px;">
+            <span style="background: #ffd600; color: #181818; font-weight: 700; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">2010</span>
+            <div><span style="color: #ffd600; font-weight: 700;">The Beginning</span><br><span style="color: #fff;">Started as a small café with a dream to serve the best coffee in town.</span></div>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 16px;">
+            <span style="background: #ffd600; color: #181818; font-weight: 700; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">2015</span>
+            <div><span style="color: #ffd600; font-weight: 700;">Expansion</span><br><span style="color: #fff;">Grew into a beloved local spot, serving hundreds of happy customers daily.</span></div>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 16px;">
+            <span style="background: #ffd600; color: #181818; font-weight: 700; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">2018</span>
+            <div><span style="color: #ffd600; font-weight: 700;">Innovation</span><br><span style="color: #fff;">Introduced new techniques and specialty drinks while preserving tradition.</span></div>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 16px;">
+            <span style="background: #ffd600; color: #181818; font-weight: 700; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">2024</span>
+            <div><span style="color: #ffd600; font-weight: 700;">Excellence</span><br><span style="color: #fff;">Continuing to craft exceptional experiences, one cup at a time.</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px;">
+        <div class="about-feature-card" style="background: #181818; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.13); padding: 22px 16px; display: flex; flex-direction: column; align-items: flex-start; border-top: 3px solid #ffd600;">
+          <span style="color: #ffd600; font-size: 1.5rem; margin-bottom: 8px;">💛</span>
+          <span style="color: #ffd600; font-weight: 700; margin-bottom: 6px;">Made with Love</span>
+          <span style="color: #fff; font-size: 1rem;">Every cup is crafted with passion and care.</span>
+        </div>
+        <div class="about-feature-card" style="background: #181818; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.13); padding: 22px 16px; display: flex; flex-direction: column; align-items: flex-start; border-top: 3px solid #ffd600;">
+          <span style="color: #ffd600; font-size: 1.5rem; margin-bottom: 8px;">🥐</span>
+          <span style="color: #ffd600; font-weight: 700; margin-bottom: 6px;">Fresh Ingredients</span>
+          <span style="color: #fff; font-size: 1rem;">Only the finest, locally sourced ingredients.</span>
+        </div>
+        <div class="about-feature-card" style="background: #181818; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.13); padding: 22px 16px; display: flex; flex-direction: column; align-items: flex-start; border-top: 3px solid #ffd600;">
+          <span style="color: #ffd600; font-size: 1.5rem; margin-bottom: 8px;">⭐</span>
+          <span style="color: #ffd600; font-weight: 700; margin-bottom: 6px;">Premium Quality</span>
+          <span style="color: #fff; font-size: 1rem;">Uncompromising standards in every detail.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="menu" style="max-width: 1100px; margin: 0 auto 80px auto; padding: 60px 24px 0 24px; background: rgba(20,20,20,0.97); border-radius: 24px; box-shadow: 0 4px 32px rgba(0,0,0,0.13);">
+    <div style="text-align: center; margin-bottom: 18px;">
+      <div style="font-family: 'Poppins', cursive; font-size: 2.7rem; color: #ffd600; font-weight: 900; margin-bottom: 0; letter-spacing: 2px; display: inline-block; position: relative;">
+        Our Menu
+        <span style="display: block; height: 4px; width: 60px; background: #ffd600; border-radius: 2px; margin: 8px auto 0 auto;"></span>
+      </div>
+      <div style="font-size: 1.15rem; color: #fff; margin-top: 12px; text-shadow: 0 2px 8px rgba(0,0,0,0.18);">Discover our signature creations and seasonal specialties</div>
+    </div>
+    <div id="menu-filters" style="display: flex; justify-content: center; gap: 18px; margin-bottom: 32px; flex-wrap: wrap;">
+      <button class="menu-filter-btn" data-filter="all" style="background: #ffd600; color: #222; border: none; border-radius: 20px; padding: 8px 28px; font-size: 1.08rem; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.07);">All</button>
+      <button class="menu-filter-btn" data-filter="coffee" style="background: none; color: #ffd600; border: 2px solid #ffd600; border-radius: 20px; padding: 8px 28px; font-size: 1.08rem; font-weight: 700; cursor: pointer;">Coffee</button>
+      <button class="menu-filter-btn" data-filter="pastries" style="background: none; color: #ffd600; border: 2px solid #ffd600; border-radius: 20px; padding: 8px 28px; font-size: 1.08rem; font-weight: 700; cursor: pointer;">Pastries</button>
+      <button class="menu-filter-btn" data-filter="sandwiches" style="background: none; color: #ffd600; border: 2px solid #ffd600; border-radius: 20px; padding: 8px 28px; font-size: 1.08rem; font-weight: 700; cursor: pointer;">Sandwiches</button>
+    </div>
+    <div id="menu-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px;">
+      <!-- Coffee -->
+      <div class="menu-item" data-category="coffee" style="background: #181818; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column;">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="Cappuccino" style="width: 100%; height: 180px; object-fit: cover;">
+        <div style="padding: 18px 20px 16px 20px; flex: 1; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #ffd600; font-weight: 700; font-size: 1.15rem;">Cappuccino</span>
+            <span style="background: #ffd600; color: #222; font-weight: 700; border-radius: 10px; padding: 4px 16px; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">$5</span>
+          </div>
+          <div style="color: #fff; font-size: 1rem; margin-bottom: 10px;">Rich espresso with steamed milk and a velvety foam top.</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Hot</span>
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Classic</span>
+          </div>
+        </div>
+      </div>
+      <!-- Pastries -->
+      <div class="menu-item" data-category="pastries" style="background: #181818; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column;">
+        <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=600&q=80" alt="Raspberry Cake" style="width: 100%; height: 180px; object-fit: cover;">
+        <div style="padding: 18px 20px 16px 20px; flex: 1; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #ffd600; font-weight: 700; font-size: 1.15rem;">Raspberry Cake</span>
+            <span style="background: #ffd600; color: #222; font-weight: 700; border-radius: 10px; padding: 4px 16px; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">$7</span>
+          </div>
+          <div style="color: #fff; font-size: 1rem; margin-bottom: 10px;">Moist vanilla cake layered with fresh raspberries and cream.</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Gluten-Free</span>
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Vegan Option</span>
+          </div>
+        </div>
+      </div>
+      <!-- Sandwiches -->
+      <div class="menu-item" data-category="sandwiches" style="background: #181818; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column;">
+        <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=600&q=80" alt="Classic Sandwich" style="width: 100%; height: 180px; object-fit: cover;">
+        <div style="padding: 18px 20px 16px 20px; flex: 1; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #ffd600; font-weight: 700; font-size: 1.15rem;">Classic Sandwich</span>
+            <span style="background: #ffd600; color: #222; font-weight: 700; border-radius: 10px; padding: 4px 16px; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">$8</span>
+          </div>
+          <div style="color: #fff; font-size: 1rem; margin-bottom: 10px;">Freshly baked bread with your choice of fillings and greens.</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Vegetarian</span>
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Popular</span>
+          </div>
+        </div>
+      </div>
+      <!-- Coffee 2 -->
+      <div class="menu-item" data-category="coffee" style="background: #181818; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column;">
+        <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80" alt="Latte" style="width: 100%; height: 180px; object-fit: cover;">
+        <div style="padding: 18px 20px 16px 20px; flex: 1; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #ffd600; font-weight: 700; font-size: 1.15rem;">Latte</span>
+            <span style="background: #ffd600; color: #222; font-weight: 700; border-radius: 10px; padding: 4px 16px; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">$6</span>
+          </div>
+          <div style="color: #fff; font-size: 1rem; margin-bottom: 10px;">Smooth espresso with steamed milk and a touch of foam.</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Iced</span>
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Artisan</span>
+          </div>
+        </div>
+      </div>
+      <!-- Pastries 2 -->
+      <div class="menu-item" data-category="pastries" style="background: #181818; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column;">
+        <img src="https://images.unsplash.com/photo-1505250469679-203ad9ced0cb?auto=format&fit=crop&w=600&q=80" alt="Berry Tart" style="width: 100%; height: 180px; object-fit: cover;">
+        <div style="padding: 18px 20px 16px 20px; flex: 1; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #ffd600; font-weight: 700; font-size: 1.15rem;">Berry Tart</span>
+            <span style="background: #ffd600; color: #222; font-weight: 700; border-radius: 10px; padding: 4px 16px; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">$6</span>
+          </div>
+          <div style="color: #fff; font-size: 1rem; margin-bottom: 10px;">Crispy tart shell filled with vanilla cream and fresh berries.</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Seasonal</span>
+          </div>
+        </div>
+      </div>
+      <!-- Sandwiches 2 -->
+      <div class="menu-item" data-category="sandwiches" style="background: #181818; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column;">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="Veggie Delight" style="width: 100%; height: 180px; object-fit: cover;">
+        <div style="padding: 18px 20px 16px 20px; flex: 1; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #ffd600; font-weight: 700; font-size: 1.15rem;">Veggie Delight</span>
+            <span style="background: #ffd600; color: #222; font-weight: 700; border-radius: 10px; padding: 4px 16px; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">$7</span>
+          </div>
+          <div style="color: #fff; font-size: 1rem; margin-bottom: 10px;">A medley of fresh vegetables and cheese in a crusty roll.</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Vegetarian</span>
+            <span style="background: #222; color: #ffd600; border-radius: 8px; padding: 4px 12px; font-size: 0.95rem;">Chef's Special</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="gallery" style="max-width: 1100px; margin: 0 auto 80px auto; padding: 60px 24px 0 24px; background: #111; border-radius: 24px; box-shadow: 0 4px 32px rgba(0,0,0,0.13); color: #fff;">
+    <div style="text-align: center; margin-bottom: 18px;">
+      <div style="font-family: 'Poppins', cursive; font-size: 2.7rem; color: #ffd700; font-weight: 900; margin-bottom: 0; letter-spacing: 2px; display: inline-block; position: relative;">
+        Gallery
+        <span style="display: block; height: 4px; width: 60px; background: #ffd700; border-radius: 2px; margin: 8px auto 0 auto;"></span>
+      </div>
+      <div style="font-size: 1.15rem; color: #fff; margin-top: 12px; text-shadow: 0 2px 8px rgba(255,255,255,0.18);">Our beautiful creations and behind-the-scenes moments</div>
+    </div>
+    <div id="gallery-filters" style="display: flex; justify-content: center; gap: 18px; margin-bottom: 32px; flex-wrap: wrap;">
+      <button class="gallery-filter-btn" data-filter="all" style="background: #111; color: #ffd700; border: none; border-radius: 20px; padding: 8px 28px; font-size: 1.08rem; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.07);">All</button>
+      <button class="gallery-filter-btn" data-filter="coffee" style="background: #111; color: #ffd700; border: none; border-radius: 20px; padding: 8px 28px; font-size: 1.08rem; font-weight: 700; cursor: pointer;">Coffee</button>
+      <button class="gallery-filter-btn" data-filter="pastries" style="background: #111; color: #ffd700; border: none; border-radius: 20px; padding: 8px 28px; font-size: 1.08rem; font-weight: 700; cursor: pointer;">Pastries</button>
+      <button class="gallery-filter-btn" data-filter="sandwiches" style="background: #111; color: #ffd700; border: none; border-radius: 20px; padding: 8px 28px; font-size: 1.08rem; font-weight: 700; cursor: pointer;">Sandwiches</button>
+      <button class="gallery-filter-btn" data-filter="cafeteria" style="background: #111; color: #ffd700; border: none; border-radius: 20px; padding: 8px 28px; font-size: 1.08rem; font-weight: 700; cursor: pointer;">Cafeteria</button>
+    </div>
+    <div id="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;">
+      <div class="gallery-item" data-category="coffee" style="background: #111; color: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07);"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="Coffee" style="width: 100%; display: block;"><div style="padding: 10px 16px; color: #ffd700; font-weight: 700;">Signature Cappuccino</div></div>
+      <div class="gallery-item" data-category="coffee" style="background: #111; color: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07);"><img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80" alt="Coffee" style="width: 100%; display: block;"><div style="padding: 10px 16px; color: #ffd700; font-weight: 700;">Latte Art</div></div>
+      <div class="gallery-item" data-category="pastries" style="background: #111; color: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07);"><img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=600&q=80" alt="Pastries" style="width: 100%; display: block;"><div style="padding: 10px 16px; color: #ffd700; font-weight: 700;">Fresh Croissants</div></div>
+      <div class="gallery-item" data-category="pastries" style="background: #111; color: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07);"><img src="https://images.unsplash.com/photo-1505250469679-203ad9ced0cb?auto=format&fit=crop&w=600&q=80" alt="Pastries" style="width: 100%; display: block;"><div style="padding: 10px 16px; color: #ffd700; font-weight: 700;">Berry Tart</div></div>
+      <div class="gallery-item" data-category="sandwiches" style="background: #111; color: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07);"><img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=600&q=80" alt="Sandwiches" style="width: 100%; display: block;"><div style="padding: 10px 16px; color: #ffd700; font-weight: 700;">Classic Sandwich</div></div>
+      <div class="gallery-item" data-category="sandwiches" style="background: #111; color: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07);"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="Sandwiches" style="width: 100%; display: block;"><div style="padding: 10px 16px; color: #ffd700; font-weight: 700;">Veggie Delight</div></div>
+      <div class="gallery-item" data-category="cafeteria" style="background: #111; color: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07);"><img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="Cafeteria" style="width: 100%; display: block;"><div style="padding: 10px 16px; color: #ffd700; font-weight: 700;">Café Interior</div></div>
+      <div class="gallery-item" data-category="cafeteria" style="background: #111; color: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07);"><img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80" alt="Cafeteria" style="width: 100%; display: block;"><div style="padding: 10px 16px; color: #ffd700; font-weight: 700;">Barista at Work</div></div>
+    </div>
+  </section>
+  <section id="contact" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 0; background: #111; box-shadow: none; border: none; max-width: 1100px; margin: 0 auto 80px auto; padding: 0; border-radius: 24px; color: #fff;">
+    <div style="flex: 1 1 340px; min-width: 300px; background: #111; border-radius: 24px 0 0 24px; padding: 40px 32px 32px 32px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 24px rgba(0,0,0,0.07); color: #fff;">
+      <div>
+        <div style="font-family: 'Poppins', cursive; font-size: 2rem; color: #ffd700; font-weight: 700; margin-bottom: 10px;">Let's Start a Conversation</div>
+        <div style="font-size: 1.08rem; color: #fff; margin-bottom: 24px;">Ready to make your day even more memorable? Get in touch with us today.</div>
+        <div style="display: flex; flex-direction: column; gap: 18px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <span style="font-size: 1.5rem; color: #ffd700;">&#x1F4CD;</span>
+            <div><span style="font-weight: 600; color: #ffd700;">Visit Us</span><br><span style="color: #fff;">123 Brew Lane, Coffee City, CA 90001</span></div>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <span style="font-size: 1.5rem; color: #ffd700;">&#x260E;</span>
+            <div><span style="font-weight: 600; color: #ffd700;">Call Us</span><br><span style="color: #fff;">(123) 456-7890</span></div>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <span style="font-size: 1.5rem; color: #ffd700;">&#x2709;</span>
+            <div><span style="font-weight: 600; color: #ffd700;">Email Us</span><br><span style="color: #fff;">hello@cafearoma.com</span></div>
+          </div>
+        </div>
+        <hr style="border: none; border-top: 1px solid #333; margin: 18px 0;">
+        <div style="font-family: 'Poppins', cursive; color: #ffd700; font-size: 1.1rem; font-weight: 600; margin-bottom: 8px;">Business Hours</div>
+        <div style="display: flex; flex-direction: column; gap: 4px; color: #fff; font-size: 1rem;">
+          <div><span style="font-weight: 600; color: #ffd700;">Monday - Friday</span> <span style="float: right; color: #fff;">7:00 AM - 8:00 PM</span></div>
+          <div><span style="font-weight: 600; color: #ffd700;">Saturday</span> <span style="float: right; color: #fff;">8:00 AM - 6:00 PM</span></div>
+          <div><span style="font-weight: 600; color: #ffd700;">Sunday</span> <span style="float: right; color: #fff;">9:00 AM - 4:00 PM</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="flex: 1 1 420px; min-width: 320px; background: #111; border-radius: 0 24px 24px 0; padding: 40px 32px 32px 32px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 2px 24px rgba(0,0,0,0.13); color: #fff;">
+      <div style="font-family: 'Poppins', cursive; font-size: 2rem; color: #ffd700; font-weight: 700; margin-bottom: 18px;">Send Us a Message</div>
+      <form class="contact-form" autocomplete="off" style="background: none; box-shadow: none; border: none; padding: 0; max-width: 100%;">
+        <div style="display: flex; gap: 12px; margin-bottom: 14px;">
+          <input type="text" placeholder="Full Name" required style="flex: 1; background: #fff; color: #1a2a33; border: none; border-radius: 8px; padding: 12px 14px; font-size: 1rem;">
+          <input type="email" placeholder="Email Address" required style="flex: 1; background: #fff; color: #1a2a33; border: none; border-radius: 8px; padding: 12px 14px; font-size: 1rem;">
+        </div>
+        <input type="text" placeholder="Phone Number" required style="width: 100%; background: #fff; color: #1a2a33; border: none; border-radius: 8px; padding: 12px 14px; font-size: 1rem; margin-bottom: 14px;">
+        <select required style="width: 100%; background: #fff; color: #1a2a33; border: none; border-radius: 8px; padding: 12px 14px; font-size: 1rem; margin-bottom: 14px;">
+          <option value="">Select a subject</option>
+          <option value="General Inquiry">General Inquiry</option>
+          <option value="Order">Order</option>
+          <option value="Event">Event</option>
+          <option value="Feedback">Feedback</option>
+        </select>
+        <textarea rows="4" placeholder="Message" required style="width: 100%; background: #fff; color: #1a2a33; border: none; border-radius: 8px; padding: 12px 14px; font-size: 1rem; margin-bottom: 14px;"></textarea>
+        <button type="submit" style="background: #ffd600; color: #111; border: none; border-radius: 8px; padding: 12px 0; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 8px;">Send Message</button>
+    </form>
+    </div>
+  </section>
+  <footer style="background: rgba(30, 22, 18, 0.85); color: #fff; padding: 48px 0 24px 0; font-family: var(--font); margin-top: 50px; box-shadow: 0 -2px 12px rgba(0,0,0,0.12); border-top: 2px solid #4fc3f7;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 32px; padding: 0 32px;">
+      <div style="flex: 1 1 260px; min-width: 220px; margin-bottom: 24px;">
+        <div style="font-size: 2rem; font-weight: 900; color: #4fc3f7; display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <span style="font-size: 2.2rem;">&#9749;</span> Café Aroma
+        </div>
+        <div style="font-size: 1.05rem; color: #e0e0e0; margin-bottom: 18px;">Savor every sip and moment. Café Aroma brings you the finest brews, fresh pastries, and a cozy space to unwind in the heart of the city.</div>
+        <div style="display: flex; gap: 14px; margin-top: 10px;">
+          <a href="#" style="color: #4fc3f7; font-size: 1.3rem; background: rgba(255,255,255,0.08); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; text-decoration: none;" title="Facebook"><span style="font-family: Arial;">f</span></a>
+          <a href="#" style="color: #4fc3f7; font-size: 1.3rem; background: rgba(255,255,255,0.08); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; text-decoration: none;" title="Instagram"><span style="font-family: Arial;">&#x1F4F7;</span></a>
+          <a href="#" style="color: #4fc3f7; font-size: 1.3rem; background: rgba(255,255,255,0.08); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; text-decoration: none;" title="Twitter"><span style="font-family: Arial;">&#x1F426;</span></a>
+        </div>
+      </div>
+      <div style="flex: 1 1 160px; min-width: 140px; margin-bottom: 24px;">
+        <div style="color: #4fc3f7; font-weight: 700; font-size: 1.1rem; margin-bottom: 14px;">Quick Links</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <a href="#home" style="color: #fff; text-decoration: none; font-size: 1rem;">Home</a>
+          <a href="#about" style="color: #fff; text-decoration: none; font-size: 1rem;">About Us</a>
+          <a href="#menu" style="color: #fff; text-decoration: none; font-size: 1rem;">Menu</a>
+          <a href="#gallery" style="color: #fff; text-decoration: none; font-size: 1rem;">Gallery</a>
+          <a href="#contact" style="color: #fff; text-decoration: none; font-size: 1rem;">Contact</a>
+        </div>
+      </div>
+      <div style="flex: 1 1 160px; min-width: 140px; margin-bottom: 24px;">
+        <div style="color: #4fc3f7; font-weight: 700; font-size: 1.1rem; margin-bottom: 14px;">Services</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <a href="#services" style="color: #fff; text-decoration: none; font-size: 1rem;">Specialty Coffee</a>
+          <a href="#services" style="color: #fff; text-decoration: none; font-size: 1rem;">Fresh Pastries</a>
+          <a href="#services" style="color: #fff; text-decoration: none; font-size: 1rem;">Breakfast & Brunch</a>
+          <a href="#services" style="color: #fff; text-decoration: none; font-size: 1rem;">Events & Catering</a>
+          <a href="#services" style="color: #fff; text-decoration: none; font-size: 1rem;">Free Wi-Fi</a>
+        </div>
+      </div>
+      <div style="flex: 1 1 160px; min-width: 140px; margin-bottom: 24px;">
+        <div style="color: #4fc3f7; font-weight: 700; font-size: 1.1rem; margin-bottom: 14px;">Support</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <a href="#faq" style="color: #fff; text-decoration: none; font-size: 1rem;">FAQ</a>
+          <a href="#order" style="color: #fff; text-decoration: none; font-size: 1rem;">Order Tracking</a>
+          <a href="#returns" style="color: #fff; text-decoration: none; font-size: 1rem;">Returns</a>
+          <a href="#privacy" style="color: #fff; text-decoration: none; font-size: 1rem;">Privacy Policy</a>
+          <a href="#terms" style="color: #fff; text-decoration: none; font-size: 1rem;">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+    <div style="border-top: 1px solid #4fc3f7; margin: 32px 0 0 0; padding-top: 18px; text-align: center; color: #b0bec5; font-size: 1rem;">
+      &copy; 2024 Café Aroma. All rights reserved.
+      <span style="float: right; color: #b0bec5; font-size: 0.98rem;">
+        <a href="#privacy" style="color: #4fc3f7; text-decoration: underline; margin-right: 18px;">Privacy Policy</a>
+        <a href="#terms" style="color: #4fc3f7; text-decoration: underline; margin-right: 18px;">Terms of Service</a>
+        <a href="#cookie" style="color: #4fc3f7; text-decoration: underline;">Cookie Policy</a>
+      </span>
+    </div>
+  </footer>
+  <script>
+    // Loader animation
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hide');
+      }, 1200);
+    });
+    // Section reveal on scroll
+    const sections = document.querySelectorAll('section');
+    const fadeInElements = document.querySelectorAll('section, .gallery-item, .menu-item, .service, .contact-form, .footer, header');
+    fadeInElements.forEach((el, i) => {
+      el.classList.add('fade-in');
+      el.style.animationDelay = (0.1 * i) + 's';
+    });
+    setTimeout(() => {
+      fadeInElements.forEach(el => el.classList.remove('fade-in'));
+    }, 1500);
+    // Section reveal on scroll (keep for visible class if needed)
+    const revealSections = () => {
+      const trigger = window.innerHeight * 0.85;
+      sections.forEach(sec => {
+        const top = sec.getBoundingClientRect().top;
+        if (top < trigger) sec.classList.add('visible');
+      });
+    };
+    window.addEventListener('scroll', revealSections);
+    window.addEventListener('DOMContentLoaded', revealSections);
+    // Responsive nav
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 600) navLinks.classList.remove('open');
+      });
+    });
+    // Contact form (demo only)
+    document.querySelector('.contact-form').addEventListener('submit', e => {
+      e.preventDefault();
+      alert('Thank you for reaching out! We will get back to you soon.');
+      e.target.reset();
+    });
+    // Gallery filter functionality
+    document.querySelectorAll('.gallery-filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.gallery-filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const filter = this.getAttribute('data-filter');
+        document.querySelectorAll('.gallery-item').forEach(item => {
+          if (filter === 'all' || item.getAttribute('data-category') === filter) {
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+    // Menu filter functionality
+    document.querySelectorAll('.menu-filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.menu-filter-btn').forEach(b => b.style.background = 'none');
+        document.querySelectorAll('.menu-filter-btn').forEach(b => b.style.color = '#ffd600');
+        document.querySelectorAll('.menu-filter-btn').forEach(b => b.style.border = '2px solid #ffd600');
+        this.style.background = '#ffd600';
+        this.style.color = '#222';
+        this.style.border = 'none';
+        const filter = this.getAttribute('data-filter');
+        document.querySelectorAll('.menu-item').forEach(item => {
+          if (filter === 'all' || item.getAttribute('data-category') === filter) {
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+    // Hero section animation trigger
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.hero-animate').forEach(el => {
+        el.style.opacity = 0;
+        el.style.transform = 'translateY(40px)';
+      });
+      setTimeout(() => {
+        document.querySelectorAll('.hero-animate').forEach(el => {
+          el.style.opacity = '';
+          el.style.transform = '';
+        });
+      }, 200);
+    });
+    // Button ripple effect
+    [...document.querySelectorAll('.cta-btn, .gallery-filter-btn, .menu-filter-btn, .contact-form button')].forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const circle = document.createElement('span');
+        circle.className = 'ripple';
+        const rect = btn.getBoundingClientRect();
+        circle.style.width = circle.style.height = Math.max(rect.width, rect.height) + 'px';
+        circle.style.left = (e.clientX - rect.left - rect.width/2) + 'px';
+        circle.style.top = (e.clientY - rect.top - rect.height/2) + 'px';
+        btn.appendChild(circle);
+        setTimeout(() => circle.remove(), 600);
+      });
+    });
+    // Parallax effect for bg-video
+    window.addEventListener('scroll', function() {
+      if(window.scrollY > 10) document.body.classList.add('scrolled');
+      else document.body.classList.remove('scrolled');
+    });
+  </script>
+</body>
+</html> 
